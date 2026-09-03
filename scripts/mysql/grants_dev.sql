@@ -1,0 +1,5 @@
+-- 本地开发环境使用 root 账号连接 nova_blog 库，无需额外授权。
+-- root 已拥有全部权限，如需创建专用账号可参考如下：
+-- CREATE USER IF NOT EXISTS 'nova_blog'@'localhost' IDENTIFIED BY 'your_password';
+-- GRANT ALL PRIVILEGES ON `nova_blog`.* TO 'nova_blog'@'localhost';
+-- FLUSH PRIVILEGES;

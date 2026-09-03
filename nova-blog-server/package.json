@@ -1,0 +1,28 @@
+{
+  "name": "@nova-blog/server",
+  "version": "1.0.0",
+  "description": "the blog backend",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "keywords": [
+    "express",
+    "blog",
+    "backend"
+  ],
+  "author": "zhuzhujian",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "file-type": "^22.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "mysql2": "^3.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.0"
+  }
+}

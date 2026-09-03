@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+
+
+# 跟踪 .env.example 作为配置模板，忽略其它真实的 .env 文件
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# RSA / OpenSSL 生成的密钥文件不入库
+**/keys/*.pem
+!**/keys/*.pem.example

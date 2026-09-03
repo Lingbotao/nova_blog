@@ -1,0 +1,3 @@
+packages:
+  - 'nova-blog-admin'
+  - 'nova-blog-server'

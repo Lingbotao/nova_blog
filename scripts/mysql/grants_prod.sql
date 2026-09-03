@@ -1,0 +1,7 @@
+-- 生产环境请务必使用专用账号，禁止 root。
+-- 1) 先创建账号（仅允许从应用服务器访问）
+-- CREATE USER IF NOT EXISTS 'nova_blog'@'%' IDENTIFIED BY 'your_strong_password';
+-- 2) 授予 nova_blog 库权限
+-- GRANT ALL PRIVILEGES ON `nova_blog`.* TO 'nova_blog'@'%';
+-- 3) 生效
+-- FLUSH PRIVILEGES;
