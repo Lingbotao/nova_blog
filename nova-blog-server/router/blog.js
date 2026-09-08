@@ -223,7 +223,7 @@ router.post('/list', async (req, res) => {
 
 router.post('/create', async (req, res) => {
   try {
-    const { title, content, slug: rawSlug } = req.body;
+    const { title, content, slug: rawSlug, status } = req.body;
     const slug = normalizeSlug(rawSlug);
     const invalidReason = validateSlug(slug);
     if (invalidReason) {
@@ -232,6 +232,8 @@ router.post('/create', async (req, res) => {
     if (slug !== null && await isSlugExists(slug)) {
       return res.status(400).json({ data: null, message: '自定义路由已存在', code: 10006 });
     }
+    const ALLOWED_STATUS = new Set([0, 1, 2, 4, 8]);
+    const finalStatus = ALLOWED_STATUS.has(status) ? status : 2;
     const createdAt = dayjs().format('YYYY-MM-DD HH:mm:ss');
     const uuid = Buffer.from(crypto.randomUUID().replace(/-/g, ''), 'hex');
     const [result] = await insert(
@@ -243,7 +245,7 @@ router.post('/create', async (req, res) => {
         slug,
         is_deleted: 0,
         type: 5, // 0-上传 1-创建 2-AI生成 4-原创 8-转载 16-翻译
-        status: 2, // 0-私密 1-公开 2-草稿 4-发布 8-下线
+        status: finalStatus, // 0-私密 1-公开 2-草稿 4-发布 8-下线
         article_id: uuid,
         create_at: createdAt,
         update_at: createdAt

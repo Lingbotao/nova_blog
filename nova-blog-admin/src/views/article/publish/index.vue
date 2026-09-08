@@ -67,26 +67,25 @@ const handlePublish = async () => {
         id: form.id,
         title: form.title,
         content: form.content,
-        slug: form.slug
+        slug: form.slug,
+        status: 4
       } as any)
       ;(window as any).$message.success('更新成功')
     } else {
       await createArticle({
         title: form.title,
         content: form.content,
-        slug: form.slug
+        slug: form.slug,
+        status: 4
       } as any)
       ;(window as any).$message.success('发布成功')
     }
-  } catch (e) {
-    console.error('发布失败:', e)
-    ;(window as any).$message.error('发布失败')
   } finally {
     loading.value = false
   }
 }
 
-const handleSave = () => {
+const handleSave = async () => {
   if (!form.title.trim()) {
     ;(window as any).$message.warning('请输入文章标题')
     return
@@ -95,9 +94,32 @@ const handleSave = () => {
     ;(window as any).$message.warning('请输入文章内容')
     return
   }
-  
-  ;(window as any).$message.info('已保存为草稿')
+
+  loading.value = true
+  try {
+    if (form.id) {
+      await updateArticle({
+        id: form.id,
+        title: form.title,
+        content: form.content,
+        slug: form.slug,
+        status: 2
+      } as any)
+      ;(window as any).$message.success('草稿保存成功')
+    } else {
+      await createArticle({
+        title: form.title,
+        content: form.content,
+        slug: form.slug,
+        status: 2
+      } as any)
+      ;(window as any).$message.success('草稿保存成功')
+    }
+  } finally {
+    loading.value = false
+  }
 }
+
 
 const onUploadImg = async (files: File[], callback: (urls: string[]) => void) => {
   const urls: string[] = await Promise.all(
