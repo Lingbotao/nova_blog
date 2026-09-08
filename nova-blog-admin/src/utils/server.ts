@@ -37,17 +37,20 @@ class ServerInstance {
       }
       return response
     }, (error) => {
+      const status = error.response?.status ?? error.status
+      const payload = error.response?.data ?? error.data
+
       // 401 代表未授权，可能是登录状态过期或者没有登录
-      if(error.status === 401) {
-        window.$message.error(error.data?.message ||'登录状态已过期，请重新登录！')
+      if(status === 401) {
+        window.$message.error(payload?.message || '登录状态已过期，请重新登录！')
         this.autoStore.$reset();
         const currentRoute = window.$router.currentRoute.value.path;
         window.$router.replace(`/login?redirect=${encodeURIComponent(currentRoute)}`); // 401时返回登录页需要保存当前访问页路径
       }
 
       // 客户端或者服务端错误提示
-      if([400, 404, 500].includes(error.status)) {
-        window.$message.error(error.data?.message || '请求出错啦！')
+      if([400, 404, 500].includes(status)) {
+        window.$message.error(payload?.message || '请求出错啦！')
       }
       return Promise.reject(error)
     });

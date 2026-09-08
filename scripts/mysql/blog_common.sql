@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS `article`;
 CREATE TABLE `article` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '博客标题',
+  `slug` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '自定义路由 slug（唯一，空则回退 article_id）',
   `desc` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '博客描述',
   `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文章内容（markdown/HTML）',
   `img` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '封面（path/uri）',
@@ -21,7 +22,8 @@ CREATE TABLE `article` (
   `update_at` datetime(3) NULL DEFAULT NULL,
   `original_url` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '转载原地址',
   `article_id` BINARY(16) NOT NULL COMMENT 'uuid_to_bin',
-  PRIMARY KEY(`id`) USING BTREE
+  PRIMARY KEY(`id`) USING BTREE,
+  UNIQUE INDEX `uk_article_slug`(`slug` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = dynamic;
 
 -- table user_auth structure 登录信息

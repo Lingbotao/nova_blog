@@ -130,6 +130,11 @@ const formatDate = (dateStr: string) => {
         <el-table-column type="selection" width="55" />
         <el-table-column prop="id" label="#" width="60" align="center" />
         <el-table-column prop="title" label="标题" min-width="200" show-overflow-tooltip />
+        <el-table-column label="自定义路由" min-width="140" show-overflow-tooltip>
+          <template #default="{ row }">
+            {{ row.slug || '-' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="updateTime" label="更新时间" width="120" align="center">
           <template #default="{ row }">
             {{ formatDate(row.updateTime) }}

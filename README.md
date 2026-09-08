@@ -93,15 +93,15 @@ nova-blog
 |------|------|------|
 | POST | `/v1/blog/list` | 文章分页列表，支持按标题模糊搜索，自动过滤软删除记录 |
 | POST | `/v1/blog/detail` | 获取文章详情 |
-| POST | `/v1/blog/create` | 创建文章（自动写入 is_deleted=0 软删除标志） |
-| POST | `/v1/blog/update` | 更新文章（基于 id 条件，支持部分字段更新） |
+| POST | `/v1/blog/create` | 创建文章（自动写入 is_deleted=0 软删除标志；可选 `slug` 自定义路由） |
+| POST | `/v1/blog/update` | 更新文章（基于 id 条件，支持部分字段更新；可选 `slug`，空串清空） |
 | POST | `/v1/blog/delete` | 删除文章（软删除，更新 is_deleted=1） |
 | POST | `/v1/blog/upload` | 上传 markdown 文件 |
 | POST | `/v1/blog/uploadImage` | 上传图片（写入 image_source 表，返回 resourceUrl） |
 
 ### 数据库表结构
 
-- `article` - 文章表：id、title、desc、content、type、status、is_top、is_deleted、create_at、update_at、article_id (BINARY(16))
+- `article` - 文章表：id、title、slug（自定义路由，唯一，空则回退 article_id）、desc、content、type、status、is_top、is_deleted、create_at、update_at、article_id (BINARY(16))
 - `user_auth` - 登录账号表：username、password、login_type、is_super 等
 - `user_info` - 用户信息表
 - `image_source` - 图片资源表：img_url、img_name、img_type、img_size、img_id (BINARY(16))

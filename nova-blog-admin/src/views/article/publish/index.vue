@@ -10,6 +10,7 @@ const route = useRoute()
 
 interface ArticleForm {
   title: string
+  slug: string
   category: string
   tags: string
   content: string
@@ -18,6 +19,7 @@ interface ArticleForm {
 
 const form = reactive<ArticleForm>({
   title: '新文章',
+  slug: '',
   category: '',
   tags: '',
   content: ''
@@ -39,6 +41,7 @@ onMounted(async () => {
       if (res.data) {
         form.id = res.data.id
         form.title = res.data.title
+        form.slug = res.data.slug || ''
         form.content = res.data.content || ''
       }
     } catch (e) {
@@ -63,13 +66,15 @@ const handlePublish = async () => {
       await updateArticle({
         id: form.id,
         title: form.title,
-        content: form.content
+        content: form.content,
+        slug: form.slug
       } as any)
       ;(window as any).$message.success('更新成功')
     } else {
       await createArticle({
         title: form.title,
-        content: form.content
+        content: form.content,
+        slug: form.slug
       } as any)
       ;(window as any).$message.success('发布成功')
     }
@@ -122,6 +127,11 @@ const onUploadImg = async (files: File[], callback: (urls: string[]) => void) =>
         size="large"
       />
       <div class="form-options flex gap-2 mt-2">
+        <el-input
+          v-model="form.slug"
+          placeholder="自定义路由（如 my-first-post，留空自动生成）"
+          style="width: 260px"
+        />
         <el-select v-model="form.category" placeholder="选择分类" style="width: 120px">
           <el-option
             v-for="item in categories"

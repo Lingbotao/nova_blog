@@ -4,6 +4,7 @@ import type { IResult } from '@/types/common'
 export interface ArticleListItem {
   id: number
   title: string
+  slug?: string
   category?: string
   tags?: string
   content?: string

@@ -8,6 +8,32 @@ import { query, insert, remove, updata } from '../utils/SQLPool.js';
 
 
 const router = Router();
+
+// 自定义路由 slug 规则：小写字母、数字、连字符（3~200 位）
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function normalizeSlug(raw) {
+  if (raw === undefined || raw === null) return null;
+  const slug = String(raw).trim().toLowerCase();
+  return slug === '' ? null : slug;
+}
+
+function validateSlug(slug) {
+  if (slug === null) return null;
+  if (!SLUG_PATTERN.test(slug) || slug.length < 3 || slug.length > 200) {
+    return '自定义路由格式不合法：仅支持小写字母、数字、连字符，长度 3~200';
+  }
+  return null;
+}
+
+async function isSlugExists(slug, excludeId) {
+  const sql = excludeId
+    ? 'SELECT 1 FROM article WHERE slug = ? AND id != ? LIMIT 1'
+    : 'SELECT 1 FROM article WHERE slug = ? LIMIT 1';
+  const params = excludeId ? [slug, excludeId] : [slug];
+  const [rows] = await query(sql, params);
+  return rows?.length > 0;
+}
 const markdownStorage = multer.diskStorage({
   destination: async (req, file, cb) => {
     try {
@@ -171,7 +197,7 @@ router.post('/list', async (req, res) => {
     const pageIndex = Number(req.body?.pageIndex) || 1
     const pageSize = Number(req.body?.pageSize) || 10
     const offset = (pageIndex - 1) * pageSize
-    const [results, fields] = await query(`SELECT * FROM article WHERE is_deleted != 1 LIMIT ?, ?`, [offset, pageSize])
+    const [results, fields] = await query(`SELECT * FROM article WHERE is_deleted != 1 LIMIT ${offset}, ${pageSize}`)
     const [countResults] = await query('SELECT COUNT(*) as count FROM article WHERE is_deleted = 0')
     return res.json({
       data: {
@@ -197,7 +223,15 @@ router.post('/list', async (req, res) => {
 
 router.post('/create', async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, slug: rawSlug } = req.body;
+    const slug = normalizeSlug(rawSlug);
+    const invalidReason = validateSlug(slug);
+    if (invalidReason) {
+      return res.status(400).json({ data: null, message: invalidReason, code: 10005 });
+    }
+    if (slug !== null && await isSlugExists(slug)) {
+      return res.status(400).json({ data: null, message: '自定义路由已存在', code: 10006 });
+    }
     const createdAt = dayjs().format('YYYY-MM-DD HH:mm:ss');
     const uuid = Buffer.from(crypto.randomUUID().replace(/-/g, ''), 'hex');
     const [result] = await insert(
@@ -206,6 +240,7 @@ router.post('/create', async (req, res) => {
         id: 0,
         title,
         content,
+        slug,
         is_deleted: 0,
         type: 5, // 0-上传 1-创建 2-AI生成 4-原创 8-转载 16-翻译
         status: 2, // 0-私密 1-公开 2-草稿 4-发布 8-下线
@@ -260,13 +295,25 @@ router.post('/delete', async (req, res) => {
 })
 
 router.post('/update', async (req, res) => {
-  const { id, title, content, status } = req.body;
+  const { id, title, content, status, slug: rawSlug } = req.body;
   try {
     const updateData = { update_at: dayjs().format('YYYY-MM-DD HH:mm:ss') }
     if (title !== undefined) updateData.title = title
     if (content !== undefined) updateData.content = content
     if (status !== undefined) updateData.status = status
     
+    if (rawSlug !== undefined) {
+      const slug = normalizeSlug(rawSlug)
+      const invalidReason = validateSlug(slug)
+      if (invalidReason) {
+        return res.status(400).json({ data: null, message: invalidReason, code: 10005 })
+      }
+      if (slug !== null && await isSlugExists(slug, id)) {
+        return res.status(400).json({ data: null, message: '自定义路由已存在', code: 10006 })
+      }
+      updateData.slug = slug
+    }
+
     const [result] = await updata('article', updateData, { id })
     return res.json({
       data: 'ok',
