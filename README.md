@@ -131,7 +131,7 @@ mysql -u root -p < scripts/mysql/blog_common.sql
 
 ```bash
 # Server
-EXPRESS_APP_PROT=3000
+EXPRESS_APP_PROT=3001
 
 # 上传目录（相对/绝对路径均可）
 UPLOAD_DESTINATION=./nova-blog-server/public/uploads
