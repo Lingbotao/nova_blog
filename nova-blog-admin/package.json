@@ -29,7 +29,7 @@
     "eslint-plugin-vue": "^10.8.0",
     "sass-embedded": "^1.98.0",
     "typescript": "~5.9.3",
-    "vite": "^8.0.1",
+    "vite": "^8.1.6",
     "vue-tsc": "^3.2.5"
   }
 }
